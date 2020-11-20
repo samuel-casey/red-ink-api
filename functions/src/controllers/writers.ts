@@ -56,9 +56,8 @@ router.put('/:doc_id', async (req: express.Request, res: express.Response) => {
     try {
         const writerDocId = req.params.doc_id
         const writerToUpdate = db.doc(`writers/${writerDocId}`)
-        const updated = await writerToUpdate.update(newWriterData)
-        // doesn't return new item, returns write time of update operation
-        res.status(200).json({status: 200, message: `updated writer with doc_id ${writerDocId}`, data: updated})
+        await writerToUpdate.update(newWriterData)
+        res.status(200).json({status: 200, message: `updated writer with doc_id ${writerDocId}`, data: newWriterData})
     } catch (error) {
         console.log(error);
         res.status(400).json({status: 400, message: "error", data: error.message})
@@ -71,9 +70,8 @@ router.delete('/:doc_id', async (req: express.Request, res: express.Response) =>
     try {
         const writerDocId = req.params.doc_id
         const writerToDelete = db.doc(`writers/${writerDocId}`)
-        const deleted = await writerToDelete.delete()
-        // doesn't return new item, returns write time of update operation
-        res.status(200).json({status: 200, message: `deleted writer with doc_id ${writerDocId}`, data: deleted})
+        await writerToDelete.delete()
+        res.status(200).json({status: 200, message: `deleted writer with doc_id ${writerDocId}`})
     } catch (error) {
         console.log(error);
         res.status(400).json({status: 400, message: "error", data: error.message})
