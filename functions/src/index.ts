@@ -10,12 +10,12 @@ app.use(express.json())
 app.use(cors())
 
 // controllers
-app.use('/writers', writersController)
-app.use('/editors', editorsController)
-app.use('/submissions', submissionsController)
+app.use('/api/writers', writersController)
+app.use('/api/editors', editorsController)
+app.use('/api/submissions', submissionsController)
 
 // returns json
-app.get('/', (_req: express.Request, res: express.Response) => {
+app.get('/api', (_req: express.Request, res: express.Response) => {
     res.send("red ink api -- documentation can be found at https://github.com/samuel-casey/red-ink-api")
 })
 
