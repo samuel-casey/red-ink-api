@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
+// import * as admin from 'firebase-admin';
 import * as express from 'express';
 import * as cors from 'cors'
 import * as writersController from './controllers/writers'
@@ -9,7 +9,7 @@ import * as writersController from './controllers/writers'
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
 
-const db = admin.initializeApp().firestore()
+// const db = admin.initializeApp().firestore()
 const app = express()
 app.use(express.json())
 app.use(cors())
