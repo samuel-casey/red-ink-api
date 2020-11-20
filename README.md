@@ -18,6 +18,7 @@ Currently in development as of 11/19/2020.
 | submissions | /submissions/writers/:writer_id | GET         | INDEX     | Get all submissions for a writer                                 |
 | submissions | /submissions/editors/:editor_id | GET         | INDEX     | Get all submissions for a writer                                 |
 | editors     | /editors                        | GET         | INDEX     | Get all editors                                                  |
+| editors     | /editors                        | GET       | SHOW   | Get data for a single editor profile  |
 | editors     | /editors                        | POST        | CREATE    | Create a new editor (passes data from User Auth object as body)  |
 | editors     | /editors                        | PUT         | UPDATE    | Update an editors profile information                            |
 | writers     | /writers                        | POST        | CREATE    | Create a new writer (passes data from User Auth object as body)  |
