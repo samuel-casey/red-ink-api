@@ -87,17 +87,17 @@ router.put('/:doc_id', async (req: express.Request, res: express.Response) => {
 
 
 // // DESTROY
-// router.delete('/:doc_id', async (req: express.Request, res: express.Response) => {
-//     try {
-//         const editorDocId = req.params.doc_id
-//         const editorToDelete = db.doc(`editors/${editorDocId}`)
-//         await editorToDelete.delete()
-//         res.status(200).json({status: 200, message: `deleted editor with doc_id ${editorDocId}`})
-//     } catch (error) {
-//         console.log(error);
-//         res.status(400).json({status: 400, message: "error", data: error.message})
-//     }
-// })
+router.delete('/:doc_id', async (req: express.Request, res: express.Response) => {
+    try {
+        const editorDocId = req.params.doc_id
+        const editorToDelete = db.doc(`editors/${editorDocId}`)
+        await editorToDelete.delete()
+        res.status(200).json({status: 200, message: `deleted editor with doc_id ${editorDocId}`})
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({status: 400, message: "error", data: error.message})
+    }
+})
 
 
 export = router

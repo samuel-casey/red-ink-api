@@ -19,9 +19,9 @@ Currently in development as of 11/19/2020.
 | submissions | /submissions/editors/:editor_id | GET         | INDEX     | Get all submissions for a editor                                 |
 | editors     | /editors                        | GET         | INDEX     | Get all editors                                                  |
 | editors     | /editors                        | POST        | CREATE    | Create a new editor (passes data from User Auth object as body)  |
-| editors     | /editors/:editor_id                        | GET       | SHOW   | Get data for a single editor profile  |
-| editors     | /editors/:editor_id                        | PUT         | UPDATE    | Update an editors profile information
-| editors     | /editors/:editor_id                        | DELETE         | DESTROY    | Delete (deactivate) an editor's profile                            |
+| editors     | /editors/:uid                        | GET       | SHOW   | Get data for a single editor profile  |
+| editors     | /editors/:doc_id                        | PUT         | UPDATE    | Update an editors profile information
+| editors     | /editors/:doc_id                        | DELETE         | DESTROY    | Delete (deactivate) an editor's profile                            |
 | writers     | /writers                        | GET       | INDEX   | Get all writers  |
 | writers     | /writers                        | POST        | CREATE    | Create a new writer (passes data from User Auth object as body)  |
 | writers     | /writers/:uid                        | GET       | SHOW    | Get a writer by ID  |
@@ -31,3 +31,4 @@ Currently in development as of 11/19/2020.
 #### Route details
 
 - DELETE routes for editors and writers will only delete their info from the writers and editors table -- it will not delete their user objects in Firebase auth. Result of this will be that if a user deletes all of their data for now and wants to join again later, they'll have an existing username and password, but won't be able to see their old submissions or profile data
+- PUT and DELETE routes use doc_id (the auto-generated document ID created by firestore), while GET/SHOW routes use the uid (a key in the writer/editor document that comes from the Auth object)
