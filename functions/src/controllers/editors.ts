@@ -1,6 +1,6 @@
 import * as express from 'express'
 const router = express.Router();
-import * as db from '../db/connection'
+import {db} from '../db/connection'
 import {Editor} from  '../db/models/editor'
 
 // INDEX
