@@ -1,7 +1,3 @@
-interface Editor {
-    email: string,
-    uid: string
-}
 interface Submission {
     submission_id: string;
     editor_id: string; 
@@ -10,3 +6,5 @@ interface Submission {
     title: string;
     edits_complete: boolean;
 }
+
+export {Submission}
