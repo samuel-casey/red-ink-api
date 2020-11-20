@@ -3,7 +3,7 @@ interface Editor {
     uid: string
 }
 interface Submission {
-    sub_id: string;
+    submission_id: string;
     editor_id: string; 
     writer_id: string;
     url: string;
