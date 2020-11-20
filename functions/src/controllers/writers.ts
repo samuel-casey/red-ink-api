@@ -55,18 +55,30 @@ router.put('/:doc_id', async (req: express.Request, res: express.Response) => {
     const newWriterData = req.body
     try {
         const writerDocId = req.params.doc_id
-        // need to find document before updating it -- can't update it unless you know its exact path AKA document ID (frontend won't know this document id because it only has uid -- addd that???)
         const writerToUpdate = db.doc(`writers/${writerDocId}`)
         const updated = await writerToUpdate.update(newWriterData)
-        res.status(204).json({status: 204, message: "updated", data: updated, a: newWriterData})
+        // doesn't return new item, returns write time of update operation
+        res.status(200).json({status: 200, message: `updated writer with doc_id ${writerDocId}`, data: updated})
     } catch (error) {
         console.log(error);
-        res.status(400).json({status: 400, message: "error", data: error.message, a: newWriterData})
+        res.status(400).json({status: 400, message: "error", data: error.message})
     }
 })
 
 
 // DESTROY
+router.delete('/:doc_id', async (req: express.Request, res: express.Response) => {
+    try {
+        const writerDocId = req.params.doc_id
+        const writerToDelete = db.doc(`writers/${writerDocId}`)
+        const deleted = await writerToDelete.delete()
+        // doesn't return new item, returns write time of update operation
+        res.status(200).json({status: 200, message: `deleted writer with doc_id ${writerDocId}`, data: deleted})
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({status: 400, message: "error", data: error.message})
+    }
+})
 
 
 export = router
