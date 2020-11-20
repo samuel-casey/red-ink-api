@@ -71,19 +71,19 @@ router.post('/', async (req: express.Request, res: express.Response) => {
 })
 
 
-// // UPDATE
-// router.put('/:doc_id', async (req: express.Request, res: express.Response) => {
-//     const newEditorData = req.body
-//     try {
-//         const editorDocId = req.params.doc_id
-//         const editorToUpdate = db.doc(`editors/${editorDocId}`)
-//         await editorToUpdate.update(newEditorData)
-//         res.status(200).json({status: 200, message: `updated editor with doc_id ${editorDocId}`, data: newEditorData})
-//     } catch (error) {
-//         console.log(error);
-//         res.status(400).json({status: 400, message: "error", data: error.message})
-//     }
-// })
+// UPDATE
+router.put('/:doc_id', async (req: express.Request, res: express.Response) => {
+    const newEditorData = req.body // SHOULD NEVER EDIT UID OR EMAIL SINCE THOSE ARE FROM AUTH
+    try {
+        const editorDocId = req.params.doc_id
+        const editorToUpdate = db.doc(`editors/${editorDocId}`)
+        await editorToUpdate.update(newEditorData)
+        res.status(200).json({status: 200, message: `updated editor with doc_id ${editorDocId}`, data: newEditorData})
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({status: 400, message: "error", data: error.message})
+    }
+})
 
 
 // // DESTROY

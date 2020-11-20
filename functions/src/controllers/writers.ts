@@ -40,7 +40,7 @@ router.get('/:uid', async (req: express.Request, res: express.Response) => {
 // CREATE
 router.post('/', async (req: express.Request, res: express.Response) => {
     try {
-        const newWriter: Writer = req.body
+        const newWriter: Writer = req.body // SHOULD NEVER EDIT UID OR EMAIL SINCE THOSE ARE FROM AUTH
         await db.collection('writers').add(newWriter)
         res.status(201).json({status: 201, message: "created", data: newWriter})
     } catch (error) {
