@@ -13,8 +13,8 @@ Currently in development as of 11/19/2020.
 | Controller  | Route                           | HTTP Method | DB Action | Description                                                      |
 |-------------|---------------------------------|-------------|-----------|------------------------------------------------------------------|
 | submissions | /submissions                    | POST        | CREATE    | Create a new writing submission                                  |
-| submissions | /submissions/:submission_id     | PUT         | UPDATE    | Mark a submission as complete or incomplete                      |
-| submissions | /submissions/:submission_id     | DELETE      | DESTROY   | Remove a submission                                              |
+| submissions | /submissions/:doc_id     | PUT         | UPDATE    | Mark a submission as complete or incomplete                      |
+| submissions | /submissions/:doc_id     | DELETE      | DESTROY   | Remove a submission                                              |
 | submissions | /submissions/writers/:writer_id | GET         | INDEX     | Get all submissions for a writer                                 |
 | submissions | /submissions/editors/:editor_id | GET         | INDEX     | Get all submissions for a editor                                 |
 | editors     | /editors                        | GET         | INDEX     | Get all editors                                                  |
@@ -24,9 +24,9 @@ Currently in development as of 11/19/2020.
 | editors     | /editors/:editor_id                        | DELETE         | DESTROY    | Delete (deactivate) an editor's profile                            |
 | writers     | /writers                        | GET       | INDEX   | Get all writers  |
 | writers     | /writers                        | POST        | CREATE    | Create a new writer (passes data from User Auth object as body)  |
-| writers     | /writers/:writer_id                        | GET       | SHOW    | Get a writer by ID  |
-| writers     | /writers/:writer_id                        | PUT        | CREATE    | Update a writer's info  |
-| writers     | /writers/:writer_id                        | DELETE        | DESTROY    | Delete (deactivate) a writer's profile  |
+| writers     | /writers/:uid                        | GET       | SHOW    | Get a writer by ID  |
+| writers     | /writers/:doc_id                        | PUT        | CREATE    | Update a writer's info  |
+| writers     | /writers/:doc_id                        | DELETE        | DESTROY    | Delete (deactivate) a writer's profile  |
 
 #### Route details
 
