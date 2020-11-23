@@ -6,6 +6,7 @@ interface Submission {
     editor_id: string;
     created_at: string; 
     edits_complete: boolean;
+    notes: string;
 }
 
 export {Submission}

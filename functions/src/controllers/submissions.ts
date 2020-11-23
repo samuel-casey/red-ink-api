@@ -18,6 +18,7 @@ router.get('/editors/:editor_uid', async (req: express.Request, res: express.Res
                 editor_id: sub.data().editor_id,
                 writer_id: sub.data().writer_id,
                 url: sub.data().url,
+                notes: sub.data().notes,
                 title: sub.data().title,
                 edits_complete: sub.data().edits_complete
             })
@@ -45,6 +46,7 @@ router.get('/writers/:writer_uid', async (req: express.Request, res: express.Res
                 editor_id: sub.data().editor_id, 
                 writer_id: sub.data().writer_id,
                 url: sub.data().url,
+                notes: sub.data().notes,
                 title: sub.data().title,
                 edits_complete: sub.data().edits_complete
             })

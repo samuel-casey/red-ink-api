@@ -14,11 +14,12 @@ router.get('/', async (_req: express.Request, res: express.Response) => {
                 uid: editor.data().uid, 
                 first_name: editor.data().first_name,
                 last_name: editor.data().last_name,
+                about_me: editor.data().about_me,
+                area_of_expertise: editor.data().area_of_expertise,
                 email: editor.data().email,
                 profile_img_url: editor.data().profile_img_url,
                 linkedin_url: editor.data().linkedin_url,
                 twitter_url: editor.data().twitter_url,
-                about_me: editor.data().about_me
             }
             editors.push(editorData)
         })
@@ -43,10 +44,11 @@ router.get('/:uid', async (req: express.Request, res: express.Response) => {
                 first_name: editor.data().first_name,
                 last_name: editor.data().last_name,
                 email: editor.data().email,
+                about_me: editor.data().about_me,
+                area_of_expertise: editor.data().area_of_expertise,
                 profile_img_url: editor.data().profile_img_url,
                 linkedin_url: editor.data().linkedin_url,
                 twitter_url: editor.data().twitter_url,
-                about_me: editor.data().about_me
             }
             theEditor.push(editorData)
         })
