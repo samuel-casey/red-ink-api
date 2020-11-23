@@ -9,4 +9,16 @@ interface Submission {
     notes: string;
 }
 
+interface SubmissionEmail {
+    title: string;
+    link: string;
+    editorFirstName: string;
+    editorLastName: string;
+    writerEmail: string;
+    editorEmail: string;
+    created_at: string; 
+    notes: string;
+}
+
+
 export {Submission}

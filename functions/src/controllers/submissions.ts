@@ -61,8 +61,12 @@ router.get('/writers/:writer_uid', async (req: express.Request, res: express.Res
 // CREATE
 router.post('/', async (req: express.Request, res: express.Response) => {
     try {
-        const newSubmission: Submission = req.body
+        const newSubmission: Submission = {
+            writer_id: req.body.writer_id
+        }
         await db.collection('submissions').add(newSubmission)
+        const newSubmissionEmail: SubmissionEmail = 
+        await axios.post('https://api.emailjs.com/api/v1.0/email/send', newSubmissionEmail)
         res.status(201).json({status:201, message: "created", data: newSubmission})
     } catch (error) {
         console.log(error)
