@@ -1,7 +1,10 @@
 import * as express from 'express'
-const router = express.Router();
+import axios from "axios";
+import {EMAILJS_SERVICE_ID, EMAILJS_UID, EMAILJS_SUBMISSION_TEMPLATE_ID} from './secrets'
 import {db} from '../db/connection'
-import {Submission} from  '../db/models/submission'
+import {Submission, SubmissionEmail} from  '../db/models/submission'
+
+const router = express.Router();
 
 // INDEX -- get all submissions assigned to a specific editor
 router.get('/editors/:editor_uid', async (req: express.Request, res: express.Response) => {
@@ -61,19 +64,68 @@ router.get('/writers/:writer_uid', async (req: express.Request, res: express.Res
 // CREATE
 router.post('/', async (req: express.Request, res: express.Response) => {
     try {
+        // create a new submission in the database
         const newSubmission: Submission = {
-            writer_id: req.body.writer_id
+            created_at: req.body.created_at,
+			editor_id: req.body.editor_id,
+			edits_complete: req.body.edits_complete,
+			title: req.body.title,
+			notes: req.body.notes,
+			url: req.body.url,
+			writer_id: req.body.writer_id,
         }
         await db.collection('submissions').add(newSubmission)
-        const newSubmissionEmail: SubmissionEmail = 
-        await axios.post('https://api.emailjs.com/api/v1.0/email/send', newSubmissionEmail)
-        res.status(201).json({status:201, message: "created", data: newSubmission})
+
+        // send email to Editor with submission details
+        const newSubmissionEmail: SubmissionEmail = {
+            title: newSubmission.title,
+            link: newSubmission.url,
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            reply_to: req.body.writer_email,
+            to_email: req.body.editor_email,
+            notes: newSubmission.notes,
+        }
+
+        const emailjsConfig = {
+            service_id: EMAILJS_SERVICE_ID,
+            template_id: EMAILJS_SUBMISSION_TEMPLATE_ID,
+            user_id: EMAILJS_UID,
+            template_params: {
+                'reply_to': newSubmissionEmail.reply_to,
+                'to_email': newSubmissionEmail.to_email,
+                'first_name': newSubmissionEmail.first_name,
+                'last_name': newSubmissionEmail.last_name,
+                'title': newSubmissionEmail.title,
+                'link': newSubmissionEmail.link,
+                'notes': newSubmissionEmail.notes
+            }
+        }
+
+        const response = await axios.post('https://api.emailjs.com/api/v1.0/email/send', emailjsConfig)
+
+        res.status(201).json({status:201, message: "created", data: newSubmission, email: response.data})
     } catch (error) {
+
+        const emailjsConfig = {
+            service_id: EMAILJS_SERVICE_ID,
+            template_id: EMAILJS_SUBMISSION_TEMPLATE_ID,
+            user_id: EMAILJS_UID,
+            template_params: {
+                'reply_to': "newSubmissionEmail.reply_to",
+                'to_email': "newSubmissionEmail.to_email",
+                'first_name': "newSubmissionEmail.first_name",
+                'last_name': "newSubmissionEmail.last_name",
+                'title': "newSubmissionEmail.title",
+                'link': "newSubmissionEmail.link",
+                'notes': "newSubmissionEmail.notes"
+            }
+        }
+
         console.log(error)
-        res.status(400).json({status: 400, message: error, data: error.message})
+        res.status(400).json({status: 400, message: error, data: error.message, config: emailjsConfig, stringified: JSON.stringify(emailjsConfig)})
     }
 })
-
 
 // UPDATE 
 router.put('/:doc_id', async (req: express.Request, res: express.Response) => {

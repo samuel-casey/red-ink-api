@@ -1,5 +1,5 @@
 interface Submission {
-    submission_id: string;
+    submission_id?: string;
     title: string;
     url: string;
     writer_id: string;
@@ -10,15 +10,14 @@ interface Submission {
 }
 
 interface SubmissionEmail {
+    to_email: string;
+    reply_to: string;
     title: string;
     link: string;
-    editorFirstName: string;
-    editorLastName: string;
-    writerEmail: string;
-    editorEmail: string;
-    created_at: string; 
     notes: string;
+    first_name: string;
+    last_name: string;
 }
 
 
-export {Submission}
+export {Submission, SubmissionEmail}
