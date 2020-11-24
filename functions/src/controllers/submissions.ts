@@ -1,6 +1,6 @@
 import * as express from 'express'
 import axios from "axios";
-import {EMAILJS_SERVICE_ID, EMAILJS_UID, EMAILJS_SUBMISSION_TEMPLATE_ID} from './secrets'
+import {EMAILJS_EDITOR_SERVICE_ID, EMAILJS_EDITOR_UID, EMAILJS_EDITOR_SUBMISSION_TEMPLATE_ID} from './secrets'
 import {db} from '../db/connection'
 import {Submission, SubmissionEmail} from  '../db/models/submission'
 
@@ -88,9 +88,9 @@ router.post('/', async (req: express.Request, res: express.Response) => {
         }
 
         const emailjsConfig = {
-            service_id: EMAILJS_SERVICE_ID,
-            template_id: EMAILJS_SUBMISSION_TEMPLATE_ID,
-            user_id: EMAILJS_UID,
+            service_id: EMAILJS_EDITOR_SERVICE_ID,
+            template_id: EMAILJS_EDITOR_SUBMISSION_TEMPLATE_ID,
+            user_id: EMAILJS_EDITOR_UID,
             template_params: {
                 'reply_to': newSubmissionEmail.reply_to,
                 'to_email': newSubmissionEmail.to_email,
