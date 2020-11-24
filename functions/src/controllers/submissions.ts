@@ -42,7 +42,7 @@ router.get('/writers/:writer_uid', async (req: express.Request, res: express.Res
         console.log(error);
         res.status(400).json({status: 400, message: "error", data: error.message})
     }
-})
+})  
 
 // CREATE
 router.post('/', async (req: express.Request, res: express.Response) => {
@@ -119,7 +119,12 @@ router.put('/:doc_id', async (req: express.Request, res: express.Response) => {
         const newSubmissionData = req.body
 
         const submissionToUpdate = db.doc(`submissions/${submissionDocId}`)
-        await submissionToUpdate.update({edits_status: newSubmissionData.edits_status})
+
+        newSubmissionData.type === 'status' ? (
+            await submissionToUpdate.update({edits_status: newSubmissionData.edits_status})
+        ) : (
+            await submissionToUpdate.update({writer_notified: newSubmissionData.writer_notified})
+        )
         res.status(200).json({status: 200, message: `updated submission with doc_id ${submissionDocId}`, data: newSubmissionData})
     } catch (error) {
         console.log(error)
