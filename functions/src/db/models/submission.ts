@@ -5,8 +5,10 @@ interface Submission {
     writer_id: string;
     editor_id: string;
     created_at: string; 
-    edits_complete: boolean;
+    edits_status: string;
     notes: string;
+    writer_notified: boolean;
+    editor_reminded: boolean;
 }
 
 interface SubmissionEmail {
@@ -18,6 +20,5 @@ interface SubmissionEmail {
     first_name: string;
     last_name: string;
 }
-
 
 export {Submission, SubmissionEmail}

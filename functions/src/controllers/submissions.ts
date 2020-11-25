@@ -1,7 +1,9 @@
 import * as express from 'express'
 import axios from "axios";
-import {EMAILJS_SERVICE_ID, EMAILJS_UID, EMAILJS_SUBMISSION_TEMPLATE_ID} from './secrets'
+
+import {EMAILJS_EDITOR_SERVICE_ID, EMAILJS_EDITOR_UID, EMAILJS_EDITOR_SUBMISSION_TEMPLATE_ID} from './secrets'
 import {db} from '../db/connection'
+import {mapSubmissionData} from '../utils/submissionHelpers'
 import {Submission, SubmissionEmail} from  '../db/models/submission'
 
 const router = express.Router();
@@ -15,16 +17,7 @@ router.get('/editors/:editor_uid', async (req: express.Request, res: express.Res
         const submissionData: Submission[] = []
 
         allSubmissionsForEditor.forEach((sub: any) => {
-            submissionData.push({
-                submission_id: sub.id,
-                created_at: sub.data().created_at,
-                editor_id: sub.data().editor_id,
-                writer_id: sub.data().writer_id,
-                url: sub.data().url,
-                notes: sub.data().notes,
-                title: sub.data().title,
-                edits_complete: sub.data().edits_complete
-            })
+           mapSubmissionData(sub, submissionData) 
         })
 
         res.status(200).json({status:200, message: "ok", data: submissionData})
@@ -43,23 +36,30 @@ router.get('/writers/:writer_uid', async (req: express.Request, res: express.Res
         const submissionData: Submission[] = []
 
         allSubmissionsForWriter.forEach((sub: any) => {
-            submissionData.push({
-                submission_id: sub.id,
-                created_at: sub.data().created_at,
-                editor_id: sub.data().editor_id, 
-                writer_id: sub.data().writer_id,
-                url: sub.data().url,
-                notes: sub.data().notes,
-                title: sub.data().title,
-                edits_complete: sub.data().edits_complete
-            })
+           mapSubmissionData(sub, submissionData)
         })
         res.status(200).json({status:200, message: "ok", data: submissionData})
     } catch (error) {
         console.log(error);
         res.status(400).json({status: 400, message: "error", data: error.message})
     }
-})
+})  
+
+
+// SHOW -- get a single submission by its document id
+router.get('/:doc_id', async (req: express.Request, res: express.Response) => {
+    try {
+        // MdKigbdbcsaTCoddQ7sf
+
+        const submissionId: string = req.params.doc_id
+        const singleSubmission = await db.collection('submissions').doc(submissionId).get()
+
+        res.status(200).json({status:200, message: "ok", data: singleSubmission.data()})
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({status: 400, message: "error", data: error.message})
+    }
+})  
 
 // CREATE
 router.post('/', async (req: express.Request, res: express.Response) => {
@@ -68,11 +68,13 @@ router.post('/', async (req: express.Request, res: express.Response) => {
         const newSubmission: Submission = {
             created_at: req.body.created_at,
 			editor_id: req.body.editor_id,
-			edits_complete: req.body.edits_complete,
+			edits_status: req.body.edits_status,
 			title: req.body.title,
 			notes: req.body.notes,
 			url: req.body.url,
-			writer_id: req.body.writer_id,
+            writer_id: req.body.writer_id,
+            editor_reminded: false,
+            writer_notified: false,
         }
         await db.collection('submissions').add(newSubmission)
 
@@ -87,10 +89,11 @@ router.post('/', async (req: express.Request, res: express.Response) => {
             notes: newSubmission.notes,
         }
 
-        const emailjsConfig = {
-            service_id: EMAILJS_SERVICE_ID,
-            template_id: EMAILJS_SUBMISSION_TEMPLATE_ID,
-            user_id: EMAILJS_UID,
+        // config for red.ink.edit.submissions@gmail.com account
+        const emailjsEditorSubmissionConfig = {
+            service_id: EMAILJS_EDITOR_SERVICE_ID,
+            template_id: EMAILJS_EDITOR_SUBMISSION_TEMPLATE_ID,
+            user_id: EMAILJS_EDITOR_UID,
             template_params: {
                 'reply_to': newSubmissionEmail.reply_to,
                 'to_email': newSubmissionEmail.to_email,
@@ -102,28 +105,13 @@ router.post('/', async (req: express.Request, res: express.Response) => {
             }
         }
 
-        const response = await axios.post('https://api.emailjs.com/api/v1.0/email/send', emailjsConfig)
+        // send an email to the editor when they've had an assignment submitted
+        const response = await axios.post('https://api.emailjs.com/api/v1.0/email/send', emailjsEditorSubmissionConfig)
 
         res.status(201).json({status:201, message: "created", data: newSubmission, email: response.data})
     } catch (error) {
-
-        const emailjsConfig = {
-            service_id: EMAILJS_SERVICE_ID,
-            template_id: EMAILJS_SUBMISSION_TEMPLATE_ID,
-            user_id: EMAILJS_UID,
-            template_params: {
-                'reply_to': "newSubmissionEmail.reply_to",
-                'to_email': "newSubmissionEmail.to_email",
-                'first_name': "newSubmissionEmail.first_name",
-                'last_name': "newSubmissionEmail.last_name",
-                'title': "newSubmissionEmail.title",
-                'link': "newSubmissionEmail.link",
-                'notes': "newSubmissionEmail.notes"
-            }
-        }
-
         console.log(error)
-        res.status(400).json({status: 400, message: error, data: error.message, config: emailjsConfig, stringified: JSON.stringify(emailjsConfig)})
+        res.status(400).json({status: 400, message: error, data: error.message})
     }
 })
 
@@ -132,8 +120,16 @@ router.put('/:doc_id', async (req: express.Request, res: express.Response) => {
     try {
         const submissionDocId = req.params.doc_id
         const newSubmissionData = req.body
+
         const submissionToUpdate = db.doc(`submissions/${submissionDocId}`)
-        await submissionToUpdate.update(newSubmissionData)
+     
+        // if user attempted to update status of document, update document status, else update the document's editor_notified field
+        newSubmissionData.type === 'status' ? (
+            await submissionToUpdate.update({edits_status: newSubmissionData.edits_status})
+            ) : (
+                await submissionToUpdate.update({writer_notified: newSubmissionData.writer_notified})
+                )
+    
         res.status(200).json({status: 200, message: `updated submission with doc_id ${submissionDocId}`, data: newSubmissionData})
     } catch (error) {
         console.log(error)
