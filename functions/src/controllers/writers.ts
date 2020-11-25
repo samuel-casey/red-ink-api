@@ -2,6 +2,11 @@ import * as express from 'express'
 const router = express.Router();
 import {db} from '../db/connection'
 import {Writer} from  '../db/models/writer'
+import {Submission} from '../db/models/submission'
+import {mapSubmissionData} from '../utils/submissionHelpers'
+import {EMAILJS_WRITER_SERVICE_ID, EMAILJS_WRITER_NOTIFICATION_TEMPLATE_ID, EMAILJS_WRITER_UID} from './secrets'
+import axios from 'axios';
+
 
 // INDEX
 router.get('/', async (_req: express.Request, res: express.Response) => {
@@ -30,6 +35,52 @@ router.get('/:uid', async (req: express.Request, res: express.Response) => {
             theWriter.push({doc_id: writer.id, uid: writer.data().uid, email: writer.data().email, about_me: writer.data().about_me})
         })
         res.status(200).json({status: 200, message: "ok", data: theWriter})
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({status: 400, message: "error", data: error.message})
+    }
+})
+
+// SEND EMAIL TO WRITER WITH COMPOUND QUERY
+router.put('/notify/:uid', async (req: express.Request, res: express.Response) => {
+    try {
+        const writerId = req.params.uid
+        const writerData = await db.collection('writers').where('uid', '==', writerId).get()
+        const writerToNotify: Writer[] = []
+        writerData.forEach((writer) => {
+            writerToNotify.push({doc_id: writer.id, uid: writer.data().uid, email: writer.data().email, about_me: writer.data().about_me})
+        })
+
+        const writerToNotifyId = writerToNotify[0].uid
+
+        const updatedLink: string = "https://docs.google.com/document/d/1mUELbYwyyioRsVjswt9s9faiXJ8L7bDfQXIzBH-fnN4/edit?usp=sharing"
+        const updatedTitle: string = "FRONTEND TEST"
+
+        // get document to send notification about -- need to fetch writer email
+        const docs = await db.collection('submissions').where('writer_id', '==', writerToNotifyId).where('url', '==', updatedLink).where('title', '==', updatedTitle).get()
+
+        const writerDocs: Submission[] = []
+
+        docs.forEach((doc: any) => mapSubmissionData(doc, writerDocs))
+
+        // combine body data (link and title), and writerEmail
+        const notificationEmailParams = {
+            'to_email': writerToNotify[0].email,
+            'title': writerDocs[0].title,
+            'link': writerDocs[0].url
+        }
+
+        const emailjsWriterNotificationConfig = {
+            service_id: EMAILJS_WRITER_SERVICE_ID,
+            template_id: EMAILJS_WRITER_NOTIFICATION_TEMPLATE_ID,
+            user_id: EMAILJS_WRITER_UID,
+            template_params: {...notificationEmailParams}
+        }
+        
+        // send notification email to writer
+        await axios.post('https://api.emailjs.com/api/v1.0/email/send', emailjsWriterNotificationConfig)
+
+        res.status(200).json({status: 200, message: "ok", data: notificationEmailParams})
     } catch (error) {
         console.log(error);
         res.status(400).json({status: 400, message: "error", data: error.message})
