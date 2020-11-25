@@ -1,7 +1,10 @@
+import axios from 'axios';
 import * as express from 'express'
 const router = express.Router();
 import {db} from '../db/connection'
 import {Editor} from  '../db/models/editor'
+import { mapEditorData } from '../utils/editorHelpers';
+import {EMAILJS_EDITOR_REMINDER_SERVICE_ID, EMAILJS_EDITOR_REMINDER_UID, EMAILJS_EDITOR_REMINDER_TEMPLATE_ID} from './secrets'
 
 // INDEX
 router.get('/', async (_req: express.Request, res: express.Response) => {
@@ -9,19 +12,7 @@ router.get('/', async (_req: express.Request, res: express.Response) => {
         const editorsResponse = await db.collection('editors').get()
         const editors: Editor[] = []
         editorsResponse.forEach((editor) => {
-            const editorData = {
-                doc_id: editor.id, 
-                uid: editor.data().uid, 
-                first_name: editor.data().first_name,
-                last_name: editor.data().last_name,
-                about_me: editor.data().about_me,
-                area_of_expertise: editor.data().area_of_expertise,
-                email: editor.data().email,
-                profile_img_url: editor.data().profile_img_url,
-                linkedin_url: editor.data().linkedin_url,
-                twitter_url: editor.data().twitter_url,
-            }
-            editors.push(editorData)
+           mapEditorData(editor, editors)
         })
         res.status(200).json({status: 200, message: "ok", data: editors})
     } catch (error) {
@@ -38,19 +29,7 @@ router.get('/:uid', async (req: express.Request, res: express.Response) => {
         const theEditorResponse = await db.collection('editors').where('uid', '==', editorId).get()
         const theEditor: Editor[] = []
         theEditorResponse.forEach((editor) => {
-            const editorData = {
-                doc_id: editor.id, 
-                uid: editor.data().uid, 
-                first_name: editor.data().first_name,
-                last_name: editor.data().last_name,
-                email: editor.data().email,
-                about_me: editor.data().about_me,
-                area_of_expertise: editor.data().area_of_expertise,
-                profile_img_url: editor.data().profile_img_url,
-                linkedin_url: editor.data().linkedin_url,
-                twitter_url: editor.data().twitter_url,
-            }
-            theEditor.push(editorData)
+            mapEditorData(editor, theEditor)
         })
         res.status(200).json({status: 200, message: "ok", data: theEditor})
     } catch (error) {
@@ -87,6 +66,47 @@ router.put('/:doc_id', async (req: express.Request, res: express.Response) => {
     }
 })
 
+// SEND A REMINDER EMAIL TO THE EDITOR USING EMAILJS
+router.put('/remind/:uid', async (req: express.Request, res: express.Response) => {
+    const newEditorData = req.body // SHOULD NEVER EDIT UID OR EMAIL SINCE THOSE ARE FROM AUTH
+    try {
+        const editorUid = req.params.uid
+        const title = newEditorData.title
+        const link = newEditorData.link
+        const created_at = newEditorData.createdAt
+        const editorName = newEditorData.editorName
+
+        const foundEditor = await db.collection('editors').where('uid', '==', editorUid).get()
+
+        const editorToNotify : Editor[] = []
+
+        foundEditor.forEach((editor) => mapEditorData(editor, editorToNotify))
+
+        // combine body data (link and title), and writerEmail
+        const reminderEmailParams = {
+            'to_email': editorToNotify[0].email,
+            'title': title,
+            'to_name': editorName,
+            'created_at': created_at,
+            'link': link
+        }
+
+        const emailjsEditorReminderConfig = {
+            service_id: EMAILJS_EDITOR_REMINDER_SERVICE_ID,
+            template_id: EMAILJS_EDITOR_REMINDER_TEMPLATE_ID,
+            user_id: EMAILJS_EDITOR_REMINDER_UID,
+            template_params: {...reminderEmailParams}
+        }
+        
+        // send reminder email to editor from red.ink.reminders@gmail.com
+        await axios.post('https://api.emailjs.com/api/v1.0/email/send', emailjsEditorReminderConfig)
+
+        res.status(200).json({status: 200, message: `reminder email sent to editor`})
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({status: 400, message: "error", data: error.message})
+    }
+})
 
 // // DESTROY
 router.delete('/:doc_id', async (req: express.Request, res: express.Response) => {

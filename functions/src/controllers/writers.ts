@@ -60,7 +60,6 @@ router.put('/notify/:uid', async (req: express.Request, res: express.Response) =
         const docs = await db.collection('submissions').where('writer_id', '==', writerToNotifyId).where('url', '==', updatedLink).where('title', '==', updatedTitle).get()
 
         const writerDocs: Submission[] = []
-
         docs.forEach((doc: any) => mapSubmissionData(doc, writerDocs))
 
         // combine body data (link and title), and writerEmail
@@ -77,7 +76,7 @@ router.put('/notify/:uid', async (req: express.Request, res: express.Response) =
             template_params: {...notificationEmailParams}
         }
         
-        // send notification email to writer
+        // send notification email to writer from red.ink.edit.updates@gmail.com
         await axios.post('https://api.emailjs.com/api/v1.0/email/send', emailjsWriterNotificationConfig)
 
         res.status(200).json({status: 200, message: "ok", data: notificationEmailParams})
