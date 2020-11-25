@@ -45,7 +45,6 @@ router.get('/writers/:writer_uid', async (req: express.Request, res: express.Res
     }
 })  
 
-
 // SHOW -- get a single submission by its document id
 router.get('/:doc_id', async (req: express.Request, res: express.Response) => {
     try {
@@ -137,12 +136,17 @@ router.put('/:doc_id', async (req: express.Request, res: express.Response) => {
     }
 })
 
+// UPDATE EDITOR_REMINDED STATUS FOR A DOC IN SUBMISSIONS COLLECTION
 router.put('/reminders/:doc_id', async (req: express.Request, res: express.Response) => {
     try {
         const submissionDocId = req.params.doc_id
-        const newSubmissionData = req.body
+        const newReminderStatus = req.body.editor_reminded
 
-        res.status(200).json({status: 200, message: "reminder sent", data: {submissionDocId, newSubmissionData} })
+        const submissionToUpdate = db.doc(`submissions/${submissionDocId}`)
+
+        await submissionToUpdate.update({editor_reminded: newReminderStatus})
+
+        res.status(200).json({status: 200, message: "reminder changed in db"})
     } catch (error) {
         console.log(error)
         res.status(400).json({status: 400, message: error, data: error.message})

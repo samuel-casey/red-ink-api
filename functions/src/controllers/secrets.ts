@@ -10,5 +10,5 @@ export const EMAILJS_WRITER_UID: string = 'user_dWB4K1oEAh7Ozvpzl5Yod'
 
 // EDITOR REMINDER NOTIFICATION CONFIG
 export const EMAILJS_EDITOR_REMINDER_SERVICE_ID: string = 'red_ink_remind_editors'
-export const EMAILJS_EDITOR_REMINDER_NOTIFICATION_TEMPLATE_ID: string = 'remind_editor'
+export const EMAILJS_EDITOR_REMINDER_TEMPLATE_ID: string = 'remind_editor'
 export const EMAILJS_EDITOR_REMINDER_UID: string = 'user_3MPLM90uVxw4OiCxtrfwm'

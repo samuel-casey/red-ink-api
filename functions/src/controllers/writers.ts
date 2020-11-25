@@ -60,7 +60,6 @@ router.put('/notify/:uid', async (req: express.Request, res: express.Response) =
         const docs = await db.collection('submissions').where('writer_id', '==', writerToNotifyId).where('url', '==', updatedLink).where('title', '==', updatedTitle).get()
 
         const writerDocs: Submission[] = []
-
         docs.forEach((doc: any) => mapSubmissionData(doc, writerDocs))
 
         // combine body data (link and title), and writerEmail
