@@ -137,6 +137,18 @@ router.put('/:doc_id', async (req: express.Request, res: express.Response) => {
     }
 })
 
+router.put('/reminders/:doc_id', async (req: express.Request, res: express.Response) => {
+    try {
+        const submissionDocId = req.params.doc_id
+        const newSubmissionData = req.body
+
+        res.status(200).json({status: 200, message: "reminder sent", data: {submissionDocId, newSubmissionData} })
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({status: 400, message: error, data: error.message})
+    }
+})
+
 // DESTROY
 router.delete('/:doc_id', async (req: express.Request, res: express.Response) => {
     try {

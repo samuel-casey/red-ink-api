@@ -77,7 +77,7 @@ router.put('/notify/:uid', async (req: express.Request, res: express.Response) =
             template_params: {...notificationEmailParams}
         }
         
-        // send notification email to writer
+        // send notification email to writer from red.ink.edit.updates@gmail.com
         await axios.post('https://api.emailjs.com/api/v1.0/email/send', emailjsWriterNotificationConfig)
 
         res.status(200).json({status: 200, message: "ok", data: notificationEmailParams})
