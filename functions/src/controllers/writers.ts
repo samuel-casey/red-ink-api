@@ -53,8 +53,8 @@ router.put('/notify/:uid', async (req: express.Request, res: express.Response) =
 
         const writerToNotifyId = writerToNotify[0].uid
 
-        const updatedLink: string = "https://docs.google.com/document/d/1mUELbYwyyioRsVjswt9s9faiXJ8L7bDfQXIzBH-fnN4/edit?usp=sharing"
-        const updatedTitle: string = "FRONTEND TEST"
+        const updatedLink: string = req.body.updatedLink
+        const updatedTitle: string = req.body.updatedTitle
 
         // get document to send notification about -- need to fetch writer email
         const docs = await db.collection('submissions').where('writer_id', '==', writerToNotifyId).where('url', '==', updatedLink).where('title', '==', updatedTitle).get()
