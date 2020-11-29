@@ -154,7 +154,7 @@ router.put('/writers/demo/:demo_writer_id', async (req: express.Request, res: ex
                     notes: 'none',
                     editor_reminded: false,
                     edits_status: 'awaiting',
-                    writer_notified: true
+                    writer_notified: false
                 
             },{
                     created_at: 'Fri, 27 Nov 2020 19:08:49 GMT',
@@ -165,7 +165,7 @@ router.put('/writers/demo/:demo_writer_id', async (req: express.Request, res: ex
                     notes: 'none',
                     editor_reminded: false,
                     edits_status: 'complete',
-                    writer_notified: true
+                    writer_notified: false
                 },{
                     created_at: 'Tue, 24 Nov 2020 19:08:49 GMT',
                     title: 'The Impact of Diet on Early Childhood Education',
@@ -175,7 +175,7 @@ router.put('/writers/demo/:demo_writer_id', async (req: express.Request, res: ex
                     notes: 'none',
                     editor_reminded: false,
                     edits_status: 'ongoing',
-                    writer_notified: true
+                    writer_notified: false
                 }, {
                     created_at: 'Sat, 21 Nov 2020 19:08:49 GMT',
                     title: 'Friendship in Seven Short Stories',
@@ -185,7 +185,7 @@ router.put('/writers/demo/:demo_writer_id', async (req: express.Request, res: ex
                     notes: 'none',
                     editor_reminded: false,
                     edits_status: 'complete',
-                    writer_notified: true
+                    writer_notified: false
                 }]
         
         // create a new submission for each demoDoc and add it to the submissions collection
