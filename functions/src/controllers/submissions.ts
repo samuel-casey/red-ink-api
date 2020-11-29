@@ -136,6 +136,74 @@ router.put('/:doc_id', async (req: express.Request, res: express.Response) => {
     }
 })
 
+
+// RESET DEMO WRITER'S SUBMISSIONS EACH TIME DEMO BUTTON IS CLICKED
+router.put('/writers/demo/:demo_writer_id', async (req: express.Request, res: express.Response) => {
+    try {
+        const demoWriterId = req.params.demo_writer_id
+
+        const batch = db.batch()
+        
+        // seed data for demo writer
+           const demoDocs: Submission[] = [{
+                    created_at: 'Sat, 28 Nov 2020 19:08:49 GMT',
+                    title: "An Analysis of Plato's Writing Style",
+                    url: 'https://docs.google.com/document/d/1wBZ7M1KHr3LfPmD54pWn_CEvwJKuoHBj74snZ2HnzH0/edit?usp=sharing',
+                    writer_id: demoWriterId,
+                    editor_id: 'yffuTH7TrSQ3WwaKnZ0MBLdS06I3',
+                    notes: 'none',
+                    editor_reminded: false,
+                    edits_status: 'awaiting',
+                    writer_notified: true
+                
+            },{
+                    created_at: 'Fri, 27 Nov 2020 19:08:49 GMT',
+                    title: 'Law School Essays',
+                    url: 'https://docs.google.com/document/d/1y42s1YMImtn95S3prud19GWgy5g6Gs43QY5gmPN10nQ/edit?usp=sharing',
+                    writer_id: demoWriterId,
+                    editor_id: 'yffuTH7TrSQ3WwaKnZ0MBLdS06I3',
+                    notes: 'none',
+                    editor_reminded: false,
+                    edits_status: 'complete',
+                    writer_notified: true
+                },{
+                    created_at: 'Tue, 24 Nov 2020 19:08:49 GMT',
+                    title: 'The Impact of Diet on Early Childhood Education',
+                    url: 'https://docs.google.com/document/d/1hsmHd6NKupw4H8sOzPf2Ybz1MFThMpvO4wJNgSUflDM/edit?usp=sharing',
+                    writer_id: demoWriterId,
+                    editor_id: 'yffuTH7TrSQ3WwaKnZ0MBLdS06I3',
+                    notes: 'none',
+                    editor_reminded: false,
+                    edits_status: 'ongoing',
+                    writer_notified: true
+                }, {
+                    created_at: 'Sat, 21 Nov 2020 19:08:49 GMT',
+                    title: 'Friendship in Seven Short Stories',
+                    url: 'https://docs.google.com/document/d/1--R5h6iGmOYTPFtMQkQJFTpYsMasdWTmH0yEUhJT-MM/edit?usp=sharing',
+                    writer_id: demoWriterId,
+                    editor_id: 'yffuTH7TrSQ3WwaKnZ0MBLdS06I3',
+                    notes: 'none',
+                    editor_reminded: false,
+                    edits_status: 'complete',
+                    writer_notified: true
+                }]
+        
+        // create a new submission for each demoDoc and add it to the submissions collection
+        demoDocs.forEach((doc) => {
+            const newSubmission = db.collection('submissions').doc()
+            batch.set(newSubmission, doc)
+        })
+
+        await batch.commit()
+
+        res.status(200).json({status: 200, message: "reset demo writer data"})
+
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({status: 400, message: "error", data: error.message})
+    }
+})
+
 // UPDATE EDITOR_REMINDED STATUS FOR A DOC IN SUBMISSIONS COLLECTION
 router.put('/reminders/:doc_id', async (req: express.Request, res: express.Response) => {
     try {

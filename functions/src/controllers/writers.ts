@@ -24,6 +24,21 @@ router.get('/', async (_req: express.Request, res: express.Response) => {
     }
 })
 
+router.get('/demo', async (_req: express.Request, res: express.Response) => {
+    try {
+        const writersResponse = await db.collection('writers').where('isDemo', '==', true).get()
+        const writers: Writer[] = []
+        writersResponse.forEach((writer) => {
+            const writerData = {doc_id: writer.id, uid: writer.data().uid, email: writer.data().email, about_me: writer.data().about_me}
+            writers.push(writerData)
+        })
+        res.status(200).json({status: 200, message: "ok", data: writers})
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({status: 400, message: "error", data: error.message})
+    }
+})
+
 // SHOW
 // uses UID, not doc_id
 router.get('/:uid', async (req: express.Request, res: express.Response) => {
