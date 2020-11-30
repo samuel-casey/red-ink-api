@@ -3,7 +3,9 @@
 
 API for red-ink built with TypeScript, Express, and Google Cloud Firestore DB. 
 
-Currently in development as of 11/19/2020.
+Currently in development as of 11/28/2020.
+
+[Live Site](https://red-ink-writing.com)
 
 [Link to frontend repository for red-ink](https://github.com/samuel-casey/red-ink-frontend)
 
