@@ -1,10 +1,10 @@
 import axios from 'axios';
-import * as express from 'express'
+import * as express from 'express';
 const router = express.Router();
-import {db} from '../db/connection'
-import {Editor} from  '../db/models/editor'
+import {db} from '../db/connection';
+import {Editor} from  '../db/models/editor';
 import { mapEditorData } from '../utils/editorHelpers';
-import {EMAILJS_EDITOR_REMINDER_SERVICE_ID, EMAILJS_EDITOR_REMINDER_UID, EMAILJS_EDITOR_REMINDER_TEMPLATE_ID} from './secrets'
+import * as functions from 'firebase-functions';
 
 // INDEX
 router.get('/', async (_req: express.Request, res: express.Response) => {
@@ -92,9 +92,9 @@ router.put('/remind/:uid', async (req: express.Request, res: express.Response) =
         }
 
         const emailjsEditorReminderConfig = {
-            service_id: EMAILJS_EDITOR_REMINDER_SERVICE_ID,
-            template_id: EMAILJS_EDITOR_REMINDER_TEMPLATE_ID,
-            user_id: EMAILJS_EDITOR_REMINDER_UID,
+            service_id: functions.config().editor_reminders.service_id,
+            template_id: functions.config().editor_reminders.editor_reminder_template_id,
+            user_id: functions.config().editor_reminders.uid,
             template_params: {...reminderEmailParams}
         }
         

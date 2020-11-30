@@ -1,8 +1,7 @@
 import * as express from 'express'
 import axios from "axios";
-
-import {EMAILJS_EDITOR_SERVICE_ID, EMAILJS_EDITOR_UID, EMAILJS_EDITOR_SUBMISSION_TEMPLATE_ID} from './secrets'
 import {db} from '../db/connection'
+import * as functions from 'firebase-functions'
 import {mapSubmissionData} from '../utils/submissionHelpers'
 import {Submission, SubmissionEmail} from  '../db/models/submission'
 
@@ -90,9 +89,9 @@ router.post('/', async (req: express.Request, res: express.Response) => {
 
         // config for red.ink.edit.submissions@gmail.com account
         const emailjsEditorSubmissionConfig = {
-            service_id: EMAILJS_EDITOR_SERVICE_ID,
-            template_id: EMAILJS_EDITOR_SUBMISSION_TEMPLATE_ID,
-            user_id: EMAILJS_EDITOR_UID,
+            service_id: functions.config().editor_submissions.service_id,
+            template_id: functions.config().editor_submissions.submission_template_id,
+            user_id: functions.config().editor_submissions.uid,
             template_params: {
                 'reply_to': newSubmissionEmail.reply_to,
                 'to_email': newSubmissionEmail.to_email,

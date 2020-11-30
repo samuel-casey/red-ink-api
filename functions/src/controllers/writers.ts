@@ -1,10 +1,10 @@
 import * as express from 'express'
+import * as functions from 'firebase-functions'
 const router = express.Router();
 import {db} from '../db/connection'
 import {Writer} from  '../db/models/writer'
 import {Submission} from '../db/models/submission'
 import {mapSubmissionData} from '../utils/submissionHelpers'
-import {EMAILJS_WRITER_SERVICE_ID, EMAILJS_WRITER_NOTIFICATION_TEMPLATE_ID, EMAILJS_WRITER_UID} from './secrets'
 import axios from 'axios';
 
 
@@ -85,9 +85,9 @@ router.put('/notify/:uid', async (req: express.Request, res: express.Response) =
         }
 
         const emailjsWriterNotificationConfig = {
-            service_id: EMAILJS_WRITER_SERVICE_ID,
-            template_id: EMAILJS_WRITER_NOTIFICATION_TEMPLATE_ID,
-            user_id: EMAILJS_WRITER_UID,
+            service_id: functions.config().writer_notifications.service_id,
+            template_id: functions.config().writer_notifications.writer_notification_template_id,
+            user_id: functions.config().writer_notifications.uid,
             template_params: {...notificationEmailParams}
         }
         
